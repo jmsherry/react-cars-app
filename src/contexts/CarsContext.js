@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useCallback } from "react";
 import { useToasts } from "react-toast-notifications";
 // import cloneDeep from 'lodash.cloneDeep' <-- use if your objects get complex
 
@@ -25,7 +25,7 @@ export const CarsProvider = (props) => {
 
   const CARS_ENDPOINT = "https://carsapp2050.herokuapp.com/api/v1/cars/";
 
-  const fetchCars = async () => {
+  const fetchCars = useCallback(async () => {
     // console.log('loading', loading);
     // console.log('error', error);
     if (loading || loaded || error) {
@@ -40,18 +40,15 @@ export const CarsProvider = (props) => {
       const data = await response.json();
       localStorage.setItem("cars", JSON.stringify(data));
       setCars(data);
-
-      // setLoading(false);
-      // console.log('cars from context', cars);
     } catch (err) {
       setError(err.message || err.statusText);
     } finally {
       setLoaded(true);
       setLoading(false);
     }
-  };
+  }, [error, loaded, loading]);
 
-  const addCar = async (formData) => {
+  const addCar = useCallback(async (formData) => {
     console.log("about to add", formData);
     try {
       const response = await fetch(CARS_ENDPOINT, {
@@ -79,9 +76,9 @@ export const CarsProvider = (props) => {
         appearance: "error",
       });
     }
-  };
+  }, [addToast, cars]);
 
-  const updateCar = async (id, formData) => {
+  const updateCar = useCallback(async (id, formData) => {
     console.log("updating", id, formData);
     let updatedCar = null;
     // Get index
@@ -139,9 +136,9 @@ export const CarsProvider = (props) => {
         appearance: "error",
       });
     }
-  };
+  }, [addToast, cars]);
 
-  const deleteCar = async (id) => {
+  const deleteCar = useCallback(async (id) => {
     let deletedCar = null;
     try {
       const response = await fetch(`${CARS_ENDPOINT}${id}`, {
@@ -171,7 +168,7 @@ export const CarsProvider = (props) => {
         appearance: "error",
       });
     }
-  };
+  }, [addToast, cars]);
 
   return (
     <CarsContext.Provider
