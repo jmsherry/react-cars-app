@@ -13,9 +13,10 @@ function CarsList() {
     cars,
   } = useContext(CarsContext);
 
+
   useEffect(() => {
     fetchCars();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <section className="cars-list-section">
